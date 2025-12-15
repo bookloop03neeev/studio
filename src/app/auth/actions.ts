@@ -1,8 +1,8 @@
 
 'use server';
 
-import { initializeFirebase } from '@/firebase';
-import { doc, setDoc } from 'firebase/firestore';
+import { initializeFirebase, setDocumentNonBlocking } from '@/firebase';
+import { doc } from 'firebase/firestore';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 type CreateUserProfilePayload = {
@@ -19,7 +19,7 @@ export async function createUserProfile(payload: CreateUserProfilePayload) {
 
     const userAvatar = PlaceHolderImages.find(p => p.id === 'user-1');
 
-    await setDoc(userRef, {
+    const userData = {
         id: payload.userId,
         firstName: payload.firstName,
         lastName: payload.lastName,
@@ -28,5 +28,7 @@ export async function createUserProfile(payload: CreateUserProfilePayload) {
         registrationDate: new Date().toISOString(),
         avatarUrl: userAvatar?.imageUrl || '',
         imageHint: userAvatar?.imageHint || 'person portrait',
-    });
+    };
+
+    setDocumentNonBlocking(userRef, userData, { merge: true });
 }

@@ -23,7 +23,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MoreHorizontal, Edit, Trash2, Loader2 } from 'lucide-react';
 import type { Book } from '@/lib/types';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,44 +34,28 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useUser } from '@/firebase';
+import { useUser, useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking } from '@/firebase';
+import { collection, query, where, doc } from 'firebase/firestore';
 
 
 export function ListingsTab() {
   const { user, isUserLoading } = useUser();
-  const [listings, setListings] = useState<Book[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const firestore = useFirestore();
   const [bookToDelete, setBookToDelete] = useState<Book | null>(null);
 
-  useEffect(() => {
-    if (isUserLoading) {
-      return;
-    }
-    
-    if (user) {
-        try {
-            const localListings : Book[] = JSON.parse(localStorage.getItem('books') || '[]');
-            const userLocalListings = localListings.filter(book => book.sellerId === user.uid);
-            setListings(userLocalListings);
-        } catch (error) {
-            console.error("Failed to parse listings from localStorage", error);
-        }
-    } else {
-        // If there's no user, there are no listings to show.
-        setListings([]);
-    }
-    setIsLoading(false);
-  }, [user, isUserLoading]);
+  const userListingsQuery = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return query(collection(firestore, 'bookListings'), where('sellerId', '==', user.uid));
+  }, [firestore, user]);
+
+  const { data: listings, isLoading } = useCollection<Book>(userListingsQuery);
 
   const handleDelete = () => {
-    if (!bookToDelete) return;
+    if (!bookToDelete || !firestore) return;
 
-    // We can only delete from localStorage
-    const localListings: Book[] = JSON.parse(localStorage.getItem('books') || '[]');
-    const updatedLocalListings = localListings.filter(book => book.id !== bookToDelete.id);
-    localStorage.setItem('books', JSON.stringify(updatedLocalListings));
+    const bookRef = doc(firestore, 'bookListings', bookToDelete.id);
+    deleteDocumentNonBlocking(bookRef);
 
-    setListings(listings.filter(book => book.id !== bookToDelete.id));
     setBookToDelete(null); 
   };
 
@@ -110,7 +94,7 @@ export function ListingsTab() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {listings.length > 0 ? (
+              {listings && listings.length > 0 ? (
                 listings.map((book) => (
                   <TableRow key={book.id}>
                     <TableCell className="hidden sm:table-cell">
@@ -144,7 +128,7 @@ export function ListingsTab() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem disabled>
                               <Edit className="mr-2 h-4 w-4" />
                               Edit
                           </DropdownMenuItem>

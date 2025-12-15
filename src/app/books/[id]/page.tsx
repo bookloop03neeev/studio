@@ -1,10 +1,9 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
 import { notFound, useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { books as staticBooks, users } from '@/lib/data';
+import { users } from '@/lib/data';
 import type { Book, Conversation } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,24 +11,25 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { MessageCircle, Loader2 } from 'lucide-react';
+import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
 
 export default function BookDetailPage() {
     const params = useParams<{ id: string }>();
     const router = useRouter();
-    const [book, setBook] = useState<Book | null | undefined>(undefined);
+    const firestore = useFirestore();
 
-    useEffect(() => {
-        if (params.id) {
-            const locallyStoredBooks: Book[] = JSON.parse(localStorage.getItem('books') || '[]');
-            const allBooks = [...staticBooks, ...locallyStoredBooks];
-            const foundBook = allBooks.find((b) => b.id === params.id);
-            setBook(foundBook || null);
-        }
-    }, [params.id]);
+    const bookRef = useMemoFirebase(() => {
+        if (!firestore || !params.id) return null;
+        return doc(firestore, 'bookListings', params.id);
+    }, [firestore, params.id]);
+
+    const { data: book, isLoading } = useDoc<Book>(bookRef);
 
     const handleContactSeller = () => {
         if (!book) return;
 
+        // This logic will be migrated to Firestore in a future step
         const locallyStoredConversations: Conversation[] = JSON.parse(localStorage.getItem('conversations') || '[]');
         
         const existingConversation = locallyStoredConversations.find(
@@ -50,7 +50,6 @@ export default function BookDetailPage() {
         const updatedConversations = [...locallyStoredConversations, newConversation];
         localStorage.setItem('conversations', JSON.stringify(updatedConversations));
 
-        // Optionally, create an initial message
         const locallyStoredMessages = JSON.parse(localStorage.getItem('messages') || '{}');
         if (!locallyStoredMessages[newConversation.id]) {
             locallyStoredMessages[newConversation.id] = [];
@@ -60,8 +59,7 @@ export default function BookDetailPage() {
         router.push(`/messages/${newConversation.id}`);
     };
 
-
-    if (book === undefined) {
+    if (isLoading) {
         return (
             <div className="flex justify-center items-center h-[60vh]">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />

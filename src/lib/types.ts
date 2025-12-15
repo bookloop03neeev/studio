@@ -1,3 +1,6 @@
+
+import type { Timestamp } from "firebase/firestore";
+
 export type User = {
   id: string;
   name: string;
@@ -19,6 +22,8 @@ export type Book = {
   sellerId: string;
   imageUrl: string;
   imageHint: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
 };
 
 export type Conversation = {

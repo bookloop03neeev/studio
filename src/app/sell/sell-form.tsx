@@ -28,9 +28,10 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { UploadCloud } from 'lucide-react';
-import type { GradeLevel, Book } from '@/lib/types';
-import { books as staticBooks } from '@/lib/data';
+import type { GradeLevel } from '@/lib/types';
 import Image from 'next/image';
+import { useFirestore, addDocumentNonBlocking } from '@/firebase';
+import { collection, serverTimestamp } from 'firebase/firestore';
 
 const gradeLevels: GradeLevel[] = ['8', '9', '10', '11', '12', 'College'];
 
@@ -47,6 +48,7 @@ const formSchema = z.object({
 export function SellForm({ userId }: { userId: string }) {
   const { toast } = useToast();
   const router = useRouter();
+  const firestore = useFirestore();
   const [preview, setPreview] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -71,20 +73,30 @@ export function SellForm({ userId }: { userId: string }) {
     }
   };
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    const existingBooks: Book[] = JSON.parse(localStorage.getItem('books') || '[]')
-    const allBooks = [...staticBooks, ...existingBooks];
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!firestore) {
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Firestore is not available. Please try again later.",
+        });
+        return;
+    }
 
-    const newBook: Book = {
-        id: `book-${allBooks.length + 1}`,
+    const newBook = {
         sellerId: userId,
         imageUrl: preview || '',
         imageHint: "book cover",
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
         ...values,
     };
+    
+    // We don't need the image File object in Firestore
+    delete newBook.image;
 
-    const updatedBooks = [...existingBooks, newBook];
-    localStorage.setItem('books', JSON.stringify(updatedBooks));
+    const listingsCol = collection(firestore, 'bookListings');
+    await addDocumentNonBlocking(listingsCol, newBook);
     
     toast({
       title: 'Listing Created!',
