@@ -1,0 +1,270 @@
+{
+  "entities": {
+    "BookListing": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "BookListing",
+      "type": "object",
+      "description": "Represents a book listing created by a student for selling a book.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the BookListing entity."
+        },
+        "sellerId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N BookListing) The user who created the listing."
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the book being listed."
+        },
+        "author": {
+          "type": "string",
+          "description": "Author of the book being listed."
+        },
+        "isbn": {
+          "type": "string",
+          "description": "ISBN of the book being listed."
+        },
+        "condition": {
+          "type": "string",
+          "description": "Condition of the book (e.g., new, used - good, used - acceptable)."
+        },
+        "gradeLevel": {
+          "type": "string",
+          "description": "Grade level for which the book is appropriate."
+        },
+        "price": {
+          "type": "number",
+          "description": "Price of the book being listed."
+        },
+        "datePosted": {
+          "type": "string",
+          "description": "Date when the listing was posted.",
+          "format": "date-time"
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL of the book image.",
+          "format": "uri"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the book."
+        }
+      },
+      "required": [
+        "id",
+        "sellerId",
+        "title",
+        "author",
+        "condition",
+        "gradeLevel",
+        "price",
+        "datePosted"
+      ]
+    },
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the BookLoop application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user.",
+          "format": "email"
+        },
+        "userName": {
+          "type": "string",
+          "description": "User name of the user."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "First name of the user."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "Last name of the user."
+        },
+        "registrationDate": {
+          "type": "string",
+          "description": "Date when the user registered.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "firstName",
+        "lastName",
+        "registrationDate"
+      ]
+    },
+    "Message": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Message",
+      "type": "object",
+      "description": "Represents a message exchanged between users.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Message entity."
+        },
+        "senderId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Message) The user who sent the message."
+        },
+        "receiverId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Message) The user who received the message."
+        },
+        "bookListingId": {
+          "type": "string",
+          "description": "Reference to BookListing. (Relationship: BookListing 1:N Message) The book listing this message is related to."
+        },
+        "content": {
+          "type": "string",
+          "description": "Content of the message."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Timestamp of when the message was sent.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "senderId",
+        "receiverId",
+        "bookListingId",
+        "content",
+        "timestamp"
+      ]
+    },
+    "Transaction": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Transaction",
+      "type": "object",
+      "description": "Represents a completed transaction between a buyer and a seller.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Transaction entity."
+        },
+        "bookListingId": {
+          "type": "string",
+          "description": "Reference to BookListing. (Relationship: BookListing 1:N Transaction) The book listing that was sold in the transaction."
+        },
+        "buyerId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Transaction) The user who bought the book."
+        },
+        "sellerId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Transaction) The user who sold the book."
+        },
+        "transactionDate": {
+          "type": "string",
+          "description": "Date when the transaction was completed.",
+          "format": "date-time"
+        },
+        "salePrice": {
+          "type": "number",
+          "description": "The final sale price of the book in the transaction."
+        }
+      },
+      "required": [
+        "id",
+        "bookListingId",
+        "buyerId",
+        "sellerId",
+        "transactionDate",
+        "salePrice"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profile data.  The 'userId' is equal to the Firebase Authentication UID.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Authentication UID of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/bookListings/{bookListingId}",
+        "definition": {
+          "entityName": "BookListing",
+          "schema": {
+            "$ref": "#/backend/entities/BookListing"
+          },
+          "description": "Stores book listing data. Includes denormalized 'sellerId' for authorization independence.",
+          "params": [
+            {
+              "name": "bookListingId",
+              "description": "Unique identifier for the book listing."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/messages/{messageId}",
+        "definition": {
+          "entityName": "Message",
+          "schema": {
+            "$ref": "#/backend/entities/Message"
+          },
+          "description": "Stores messages related to a user.  'userId' corresponds to either the sender or receiver. Includes denormalized 'senderId', 'receiverId' and 'bookListingId'.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Authentication UID of the user."
+            },
+            {
+              "name": "messageId",
+              "description": "Unique identifier for the message."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/transactions/{transactionId}",
+        "definition": {
+          "entityName": "Transaction",
+          "schema": {
+            "$ref": "#/backend/entities/Transaction"
+          },
+          "description": "Stores transaction data.",
+          "params": [
+            {
+              "name": "transactionId",
+              "description": "Unique identifier for the transaction."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore data structure is designed to support the core features of the BookLoop application, focusing on book listings, messaging, and sales tracking, while adhering to the principles of Authorization Independence, Clarity of Intent, DBAC, and QAPs.  The structure employs denormalization to ensure authorization rules don't rely on expensive `get()` calls, which also facilitates atomic operations. Path-based ownership is used where possible to simplify security rules and improve efficiency. Segregation is applied by isolating user-specific data into user-owned subcollections.\n\n**Authorization Independence (Denormalization):** The `BookListing` documents are stored under `/bookListings/{bookListingId}` and contain the `sellerId`. This denormalization means security rules for accessing a book listing can directly check the `sellerId` against `request.auth.uid` without needing to `get()` the user document.\n\n**QAPs (Rules are not Filters):** The structure facilitates secure `list` operations. For example, listing book listings requires no `get()` calls because the necessary authorization information (`sellerId`) is present on the `BookListing` documents themselves. Similarly, message retrieval is structured to ensure users can only access messages where they are either the sender or receiver.\n\nPath-based ownership, particularly with the `/users/{userId}/...` structure, is used for entities directly related to a user. This provides a clear and secure way to manage and control access to user-specific data such as their book listings and messages. The chosen structure supports all app requirements."
+  }
+}

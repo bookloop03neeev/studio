@@ -1,0 +1,171 @@
+/**
+ * Core Philosophy: This ruleset enforces a user-centric security model. It allows for a public, read-only marketplace of book listings while strictly controlling access to private user data, messages, and transaction records. Write operations are consistently restricted to the resource owner or relevant participants.
+ *
+ * Data Structure:
+ * - /users/{userId}: Private user profile data.
+ * - /bookListings/{bookListingId}: Publicly readable book listings.
+ * - /users/{userId}/messages/{messageId}: Private messages, segregated into subcollections for each participant.
+ * - /transactions/{transactionId}: Private, immutable records of completed sales.
+ *
+ * Key Security Decisions:
+ * - Public Marketplace: The '/bookListings' collection is publicly readable to allow anyone to browse books for sale. However, only the authenticated seller can create, update, or delete their own listings.
+ * - No User Listing: To protect user privacy, it is not possible to list all documents in the '/users' collection.
+ * - Private User Data: A user can only access and modify their own document within the '/users' collection.
+ * - Transaction Immutability: Transactions are write-once records. Once created, they cannot be updated or deleted, ensuring a secure audit trail. Creation is restricted to the buyer.
+ * - Segregated Messaging: Messages are stored in a subcollection under each user involved. This simplifies security rules, ensuring a user can only query and access their own message threads.
+ *
+ * Denormalization for Authorization: This ruleset relies on denormalized fields for efficient and secure authorization checks, avoiding slow and costly 'get()' calls.
+ * - 'BookListing' documents contain a 'sellerId'.
+ * - 'Transaction' documents contain both a 'buyerId' and 'sellerId'.
+ * - 'Message' documents contain a 'senderId' and 'receiverId'.
+ * These fields are checked directly against the authenticated user's ID.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ----------------------------------------------------------------------
+    // Helper Functions
+    // ----------------------------------------------------------------------
+
+    /**
+     * Returns true if the user is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Returns true if the requesting user's UID matches the provided userId.
+     * This is the fundamental check for document ownership.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * Returns true if the document being accessed already exists in Firestore.
+     * Crucial for protecting against writes to non-existent documents.
+     */
+    function isExistingDoc() {
+      return resource != null;
+    }
+
+    /**
+     * Returns true if the user is the owner of an existing document.
+     * Combines ownership and existence checks for secure updates and deletes.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && isExistingDoc();
+    }
+    
+    /**
+     * Validates that the user creating a BookListing is the seller listed in the document.
+     */
+    function isSellerOnCreate() {
+      return isOwner(request.resource.data.sellerId);
+    }
+
+    /**
+     * Validates that the user creating a Transaction is the buyer listed in the document.
+     */
+    function isBuyerOnCreate() {
+      return isOwner(request.resource.data.buyerId);
+    }
+    
+    /**
+     * Returns true if the user is a participant (buyer or seller) in a transaction.
+     */
+    function isTransactionParticipant(docData) {
+      return isSignedIn() && (request.auth.uid == docData.buyerId || request.auth.uid == docData.sellerId);
+    }
+
+    /**
+     * Returns true if the user is the sender or receiver of the message at this specific path.
+     */
+    function isMessageParticipant(userId, docData) {
+      // The path userId must match either the sender or receiver to be valid.
+      let isCorrectPath = userId == docData.senderId || userId == docData.receiverId;
+      // The authenticated user must be the owner of this path.
+      return isOwner(userId) && isCorrectPath;
+    }
+    
+    /**
+     * Ensures critical ownership fields cannot be changed after creation.
+     */
+    function isIdImmutable(fieldName) {
+      return request.resource.data[fieldName] == resource.data[fieldName];
+    }
+    
+    // ----------------------------------------------------------------------
+    // Collection Rules
+    // ----------------------------------------------------------------------
+
+    /**
+     * @description Users can create their own profile, and read or update it. They cannot delete their profile or see other users' profiles.
+     * @path /users/{userId}
+     * @allow (create) A new user with auth.uid 'user_abc' creating their own document at /users/user_abc.
+     * @deny (list) Any user trying to list all documents in the /users collection.
+     * @deny (get) A user with auth.uid 'user_xyz' trying to read /users/user_abc.
+     * @principle Restricts access to a user's own data tree and enforces self-creation.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && isIdImmutable('id');
+      allow delete: if false;
+    }
+
+    /**
+     * @description Book listings are public for anyone to read. Only the authenticated seller can create, update, or delete their own listing.
+     * @path /bookListings/{bookListingId}
+     * @allow (list) An unauthenticated user viewing all available book listings.
+     * @allow (update) The seller (auth.uid matches resource.data.sellerId) updating their own listing.
+     * @deny (create) A user trying to create a listing where the 'sellerId' is not their own UID.
+     * @deny (delete) A user trying to delete a listing they do not own.
+     * @principle Implements a "Public Read with Owner-Only Writes" pattern.
+     */
+    match /bookListings/{bookListingId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if isSignedIn() && isSellerOnCreate();
+      allow update: if isExistingOwner(resource.data.sellerId) && isIdImmutable('sellerId');
+      allow delete: if isExistingOwner(resource.data.sellerId);
+    }
+
+    /**
+     * @description A user can read and list messages in their own message subcollection. They can only create messages where they are the sender. Messages are immutable.
+     * @path /users/{userId}/messages/{messageId}
+     * @allow (create) User 'user_abc' creating a message in /users/user_abc/messages/ where the message data has senderId: 'user_abc'.
+     * @allow (get) User 'user_abc' reading a message at /users/user_abc/messages/{msgId} where their UID is either the sender or receiver.
+     * @deny (update) Any user trying to update an existing message.
+     * @deny (get) User 'user_xyz' trying to read a message in /users/user_abc/messages/.
+     * @principle Enforces path-based ownership and immutability for communication records.
+     */
+    match /users/{userId}/messages/{messageId} {
+      allow get: if isExistingDoc() && isMessageParticipant(userId, resource.data);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.senderId == userId;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    /**
+     * @description Only the buyer or seller involved in a transaction can read its details. Only the buyer can create the record. Transactions are immutable.
+     * @path /transactions/{transactionId}
+     * @allow (get) The user whose UID matches 'buyerId' or 'sellerId' on the document can read it.
+     * @allow (create) The user whose UID matches the 'buyerId' in the new document can create it.
+     * @deny (list) No user can list all transactions in the system.
+     * @deny (update) Any user trying to modify a completed transaction record.
+     * @principle Enforces shared access for specific participants and immutability for financial records.
+     */
+    match /transactions/{transactionId} {
+      allow get: if isExistingDoc() && isTransactionParticipant(resource.data);
+      allow list: if false;
+      allow create: if isSignedIn() && isBuyerOnCreate();
+      allow update: if false;
+      allow delete: if false;
+    }
+  }
+}
