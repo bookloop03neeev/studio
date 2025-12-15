@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { UploadCloud } from 'lucide-react';
@@ -43,6 +44,8 @@ const formSchema = z.object({
   gradeLevel: z.enum(gradeLevels),
   description: z.string().min(10, 'Description must be at least 10 characters.'),
   image: z.any().refine(file => file instanceof File, 'Image is required.'),
+  listingCharge: z.enum(['0', '5', '10']).optional().default('0'),
+  deliveryMethod: z.enum(['Pickup Point', 'Team Handling'], { required_error: 'You must select a delivery method.' }),
 });
 
 export function SellForm({ userId }: { userId: string }) {
@@ -58,6 +61,7 @@ export function SellForm({ userId }: { userId: string }) {
       author: '',
       price: 0,
       description: '',
+      listingCharge: '0',
     },
   });
 
@@ -90,6 +94,7 @@ export function SellForm({ userId }: { userId: string }) {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         ...values,
+        listingCharge: parseInt(values.listingCharge || '0', 10),
     };
     
     // We don't need the image File object in Firestore
@@ -261,6 +266,84 @@ export function SellForm({ userId }: { userId: string }) {
                     />
                   </label>
                 </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="deliveryMethod"
+          render={({ field }) => (
+            <FormItem className="space-y-3">
+              <FormLabel>Delivery Method</FormLabel>
+              <FormDescription>
+                How will the buyer receive the book?
+              </FormDescription>
+              <FormControl>
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="flex flex-col space-y-1"
+                >
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="Pickup Point" />
+                    </FormControl>
+                    <FormLabel className="font-normal">
+                      Meet at a designated pickup point
+                    </FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="Team Handling" />
+                    </FormControl>
+                    <FormLabel className="font-normal">
+                      Give the book to the BookLoop team to handle delivery
+                    </FormLabel>
+                  </FormItem>
+                </RadioGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="listingCharge"
+          render={({ field }) => (
+            <FormItem className="space-y-3">
+              <FormLabel>Optional Listing Fee</FormLabel>
+              <FormDescription>
+                Pay a small fee to have your book featured. This is optional.
+              </FormDescription>
+              <FormControl>
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="flex items-center space-x-4"
+                >
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="0" />
+                    </FormControl>
+                    <FormLabel className="font-normal">None</FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="5" />
+                    </FormControl>
+                    <FormLabel className="font-normal">₹5</FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="10" />
+                    </FormControl>
+                    <FormLabel className="font-normal">₹10</FormLabel>
+                  </FormItem>
+                </RadioGroup>
               </FormControl>
               <FormMessage />
             </FormItem>

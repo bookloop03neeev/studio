@@ -27,6 +27,8 @@ export type Book = {
   imageHint: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
+  listingCharge?: number;
+  deliveryMethod: 'Pickup Point' | 'Team Handling';
 };
 
 export type Conversation = {

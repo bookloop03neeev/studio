@@ -33,7 +33,8 @@
         },
         "gradeLevel": {
           "type": "string",
-          "description": "Grade level for which the book is intended (e.g., 9th, 10th, 11th, 12th)."
+          "description": "Grade level for which the book is intended (e.g., 9th, 10th, 11th, 12th).",
+          "enum": ["8", "9", "10", "11", "12"]
         },
         "price": {
           "type": "number",
@@ -46,6 +47,15 @@
         "imageUrl": {
           "type": "string",
           "description": "URL of the book's image."
+        },
+        "listingCharge": {
+          "type": "number",
+          "description": "Optional fee to promote the listing."
+        },
+        "deliveryMethod": {
+            "type": "string",
+            "description": "How the book will be delivered.",
+            "enum": ["Pickup Point", "Team Handling"]
         },
         "createdAt": {
             "type": "string",
@@ -65,7 +75,8 @@
         "gradeLevel",
         "price",
         "createdAt",
-        "updatedAt"
+        "updatedAt",
+        "deliveryMethod"
       ]
     },
     "User": {

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { notFound, useParams, useRouter } from 'next/navigation';
@@ -8,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
-import { MessageCircle, Loader2 } from 'lucide-react';
+import { MessageCircle, Loader2, Truck } from 'lucide-react';
 import { useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
@@ -112,6 +113,13 @@ export default function BookDetailPage() {
                         <Badge variant="outline" className="text-sm">
                         {`Grade ${book.gradeLevel}`}
                         </Badge>
+                    </div>
+
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <Truck className="h-5 w-5 text-primary" />
+                        <span>
+                            Delivery: <strong>{book.deliveryMethod === 'Pickup Point' ? 'Meet at Pickup Point' : 'Handled by BookLoop Team'}</strong>
+                        </span>
                     </div>
 
                     <p className="text-4xl font-bold text-primary">₹{book.price}</p>
