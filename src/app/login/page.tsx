@@ -29,6 +29,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/firebase';
 import { Loader2 } from 'lucide-react';
+import { ToastAction } from '@/components/ui/toast';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email.' }),
@@ -60,17 +61,25 @@ export default function LoginPage() {
       router.push('/dashboard');
     } catch (error: any) {
       console.error('Login Error:', error);
-      let description = 'An unknown error occurred. Please try again.';
+      
       if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found') {
-        description = 'Invalid credentials. No account found with that email and password. Please sign up if you are a new user.';
+        toast({
+            variant: 'destructive',
+            title: 'Login Failed',
+            description: 'No account found with that email and password.',
+            action: (
+              <ToastAction altText="Sign up" onClick={() => router.push('/signup')}>
+                Sign up
+              </ToastAction>
+            ),
+          });
       } else {
-        description = error.message;
+        toast({
+            variant: 'destructive',
+            title: 'Login Failed',
+            description: error.message || 'An unknown error occurred. Please try again.',
+          });
       }
-      toast({
-        variant: 'destructive',
-        title: 'Login Failed',
-        description: description,
-      });
     } finally {
       setIsLoading(false);
     }
