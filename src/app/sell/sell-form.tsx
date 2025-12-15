@@ -2,7 +2,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import * as z from 'zod';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -28,25 +28,54 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { UploadCloud } from 'lucide-react';
+import { UploadCloud, Info } from 'lucide-react';
 import type { GradeLevel } from '@/lib/types';
 import Image from 'next/image';
 import { useFirestore, addDocumentNonBlocking } from '@/firebase';
 import { collection, serverTimestamp } from 'firebase/firestore';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const gradeLevels: GradeLevel[] = ['8', '9', '10', '11', '12'];
 
 const formSchema = z.object({
   title: z.string().min(2, 'Title must be at least 2 characters.'),
   author: z.string().optional(),
-  price: z.coerce.number().int().positive('Price must be a positive number.'),
+  price: z.coerce.number().positive('Price must be a positive number.'),
   condition: z.enum(['New', 'Like New', 'Good', 'Fair', 'Worn']),
   gradeLevel: z.enum(gradeLevels),
   description: z.string().min(10, 'Description must be at least 10 characters.'),
   image: z.any().refine(file => file instanceof File, 'Image is required.'),
-  listingCharge: z.enum(['5', '10'], { required_error: 'You must select a listing fee.' }),
   deliveryMethod: z.enum(['Pickup Point', 'Team Handling'], { required_error: 'You must select a delivery method.' }),
 });
+
+type FormValues = z.infer<typeof formSchema>;
+
+function FeeDisplay({ control }: { control: any }) {
+  const deliveryMethod = useWatch({
+    control,
+    name: "deliveryMethod",
+  });
+
+  const getFee = () => {
+    if (deliveryMethod === 'Pickup Point') return 5;
+    if (deliveryMethod === 'Team Handling') return 15;
+    return 0;
+  }
+
+  const fee = getFee();
+
+  if (fee === 0) return null;
+
+  return (
+    <Alert>
+      <Info className="h-4 w-4" />
+      <AlertTitle>Listing Fee</AlertTitle>
+      <AlertDescription>
+        A fee of <strong>₹{fee}</strong> will be applied for the selected delivery method.
+      </AlertDescription>
+    </Alert>
+  )
+}
 
 export function SellForm({ userId }: { userId: string }) {
   const { toast } = useToast();
@@ -54,12 +83,12 @@ export function SellForm({ userId }: { userId: string }) {
   const firestore = useFirestore();
   const [preview, setPreview] = useState<string | null>(null);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: '',
       author: '',
-      price: 0,
+      price: undefined,
       description: '',
     },
   });
@@ -76,7 +105,7 @@ export function SellForm({ userId }: { userId: string }) {
     }
   };
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: FormValues) {
     if (!firestore) {
         toast({
             variant: "destructive",
@@ -84,6 +113,13 @@ export function SellForm({ userId }: { userId: string }) {
             description: "Firestore is not available. Please try again later.",
         });
         return;
+    }
+    
+    let listingCharge = 0;
+    if (values.deliveryMethod === 'Pickup Point') {
+      listingCharge = 5;
+    } else if (values.deliveryMethod === 'Team Handling') {
+      listingCharge = 15;
     }
 
     const newBook = {
@@ -93,11 +129,12 @@ export function SellForm({ userId }: { userId: string }) {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         ...values,
-        listingCharge: parseInt(values.listingCharge, 10),
+        price: values.price || 0,
+        listingCharge,
     };
     
     // We don't need the image File object in Firestore
-    delete newBook.image;
+    delete (newBook as any).image;
 
     const listingsCol = collection(firestore, 'bookListings');
     await addDocumentNonBlocking(listingsCol, newBook);
@@ -133,7 +170,7 @@ export function SellForm({ userId }: { userId: string }) {
             name="author"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Author (Optional)</FormLabel>
+                <FormLabel>Author</FormLabel>
                 <FormControl>
                   <Input placeholder="e.g., N. Gregory Mankiw" {...field} />
                 </FormControl>
@@ -150,7 +187,7 @@ export function SellForm({ userId }: { userId: string }) {
                 <FormItem>
                 <FormLabel>Price (₹)</FormLabel>
                 <FormControl>
-                    <Input type="number" step="1" placeholder="3500" {...field} />
+                    <Input type="number" step="1" placeholder="350" {...field} />
                 </FormControl>
                 <FormMessage />
                 </FormItem>
@@ -278,7 +315,7 @@ export function SellForm({ userId }: { userId: string }) {
             <FormItem className="space-y-3">
               <FormLabel>Delivery Method</FormLabel>
               <FormDescription>
-                How will the buyer receive the book?
+                How will the buyer receive the book? A fee will be applied based on your choice.
               </FormDescription>
               <FormControl>
                 <RadioGroup
@@ -291,7 +328,7 @@ export function SellForm({ userId }: { userId: string }) {
                       <RadioGroupItem value="Pickup Point" />
                     </FormControl>
                     <FormLabel className="font-normal">
-                      Meet at a designated pickup point
+                      Meet at a designated pickup point (Fee: ₹5)
                     </FormLabel>
                   </FormItem>
                   <FormItem className="flex items-center space-x-3 space-y-0">
@@ -299,7 +336,7 @@ export function SellForm({ userId }: { userId: string }) {
                       <RadioGroupItem value="Team Handling" />
                     </FormControl>
                     <FormLabel className="font-normal">
-                      Give the book to the BookLoop team to handle delivery
+                      Give the book to the BookLoop team to handle delivery (Fee: ₹15)
                     </FormLabel>
                   </FormItem>
                 </RadioGroup>
@@ -309,42 +346,12 @@ export function SellForm({ userId }: { userId: string }) {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="listingCharge"
-          render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormLabel>Listing Fee</FormLabel>
-              <FormDescription>
-                Pay a small fee to have your book featured.
-              </FormDescription>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex items-center space-x-4"
-                >
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="5" />
-                    </FormControl>
-                    <FormLabel className="font-normal">₹5</FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="10" />
-                    </FormControl>
-                    <FormLabel className="font-normal">₹10</FormLabel>
-                  </FormItem>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <Button type="submit" size="lg">Create Listing</Button>
+        <Button type="submit" size="lg" disabled={form.formState.isSubmitting}>
+          {form.formState.isSubmitting ? 'Creating...' : 'Create Listing'}
+        </Button>
       </form>
     </Form>
   );
 }
+
+    
