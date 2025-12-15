@@ -98,9 +98,7 @@
       },
       "required": [
         "id",
-        "username",
-        "email",
-        "name"
+        "email"
       ]
     },
     "Message": {
@@ -196,23 +194,31 @@
     ]
   },
   "firestore": {
-      "collections": {
-          "/users/{userId}": {
-              "schema": { "$ref": "#/entities/User"},
-              "description": "Stores user profile information."
-          },
-          "/bookListings/{bookListingId}": {
-              "schema": { "$ref": "#/entities/BookListing"},
-              "description": "Stores all book listings from all users."
-          },
-          "/bookListings/{bookListingId}/messages/{messageId}": {
-              "schema": { "$ref": "#/entities/Message"},
-              "description": "Stores messages related to a specific book listing."
-          },
-          "/transactions/{transactionId}": {
-              "schema": { "$ref": "#/entities/Transaction"},
-              "description": "Stores transaction records."
-          }
+    "collections": {
+      "/users/{userId}": {
+        "schema": {
+          "$ref": "#/entities/User"
+        },
+        "description": "Stores user profile information."
+      },
+      "/bookListings/{bookListingId}": {
+        "schema": {
+          "$ref": "#/entities/BookListing"
+        },
+        "description": "Stores all book listings from all users."
+      },
+      "/bookListings/{bookListingId}/messages/{messageId}": {
+        "schema": {
+          "$ref": "#/entities/Message"
+        },
+        "description": "Stores messages related to a specific book listing."
+      },
+      "/transactions/{transactionId}": {
+        "schema": {
+          "$ref": "#/entities/Transaction"
+        },
+        "description": "Stores transaction records."
       }
+    }
   }
 }
