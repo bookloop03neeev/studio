@@ -3,6 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
+import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -27,7 +28,7 @@ import { useToast } from '@/hooks/use-toast';
 import { UploadCloud } from 'lucide-react';
 import type { GradeLevel } from '@/lib/types';
 
-const gradeLevels: GradeLevel[] = ['8', '9', '10', '11', '12'];
+const gradeLevels: GradeLevel[] = ['8', '9', '10', '11', '12', 'College'];
 
 const formSchema = z.object({
   title: z.string().min(2, 'Title must be at least 2 characters.'),
@@ -41,6 +42,7 @@ const formSchema = z.object({
 
 export function SellForm() {
   const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -59,6 +61,7 @@ export function SellForm() {
       description: `Your book "${values.title}" has been listed for sale.`,
     });
     form.reset();
+    router.push('/books');
   }
 
   return (
