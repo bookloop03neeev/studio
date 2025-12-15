@@ -1,4 +1,3 @@
-
 'use client';
 
 import { notFound, useParams, useRouter } from 'next/navigation';
@@ -33,7 +32,7 @@ export default function BookDetailPage() {
 
     const { data: seller, isLoading: isSellerLoading } = useDoc<User>(sellerRef);
 
-    const isLoading = isBookLoading || isSellerLoading;
+    const isLoading = isBookLoading || (book && !seller && isSellerLoading);
 
     const handleContactSeller = () => {
         if (!book) return;
@@ -111,7 +110,7 @@ export default function BookDetailPage() {
                     <div className="flex items-center gap-4">
                         <Badge variant="outline" className="text-sm">{book.condition}</Badge>
                         <Badge variant="outline" className="text-sm">
-                        {book.gradeLevel === 'College' ? 'College' : `Grade ${book.gradeLevel}`}
+                        {`Grade ${book.gradeLevel}`}
                         </Badge>
                     </div>
 
