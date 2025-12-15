@@ -121,31 +121,6 @@ export const userPurchases = [
   { ...books[2], purchasePrice: 60, purchaseDate: '2023-08-20', seller: 'user-3' },
 ];
 
-export const conversations: (Conversation & { otherUser: User, book: Book })[] = [
-    {
-        id: 'conv-1',
-        userId: 'user-2',
-        bookId: '1',
-        otherUser: users.find(u => u.id === 'user-2')!,
-        book: books.find(b => b.id === '1')!
-    },
-    {
-        id: 'conv-2',
-        userId: 'user-3',
-        bookId: '2',
-        otherUser: users.find(u => u.id === 'user-3')!,
-        book: books.find(b => b.id === '2')!
-    },
-];
+export const conversations: (Conversation & { otherUser: User, book: Book })[] = [];
 
-export const messages: Record<string, Message[]> = {
-    'conv-1': [
-        { id: 'msg-1', conversationId: 'conv-1', senderId: 'user-1', text: 'Hi, is this book still available?', timestamp: '2023-11-10T10:00:00Z' },
-        { id: 'msg-2', conversationId: 'conv-1', senderId: 'user-2', text: 'Yes, it is!', timestamp: '2023-11-10T10:01:00Z' },
-        { id: 'msg-3', conversationId: 'conv-1', senderId: 'user-1', text: 'Great! Does it have any highlighting?', timestamp: '2023-11-10T10:02:00Z' },
-        { id: 'msg-4', conversationId: 'conv-1', senderId: 'user-2', text: 'Nope, it\'s completely clean inside.', timestamp: '2023-11-10T10:03:00Z' },
-    ],
-    'conv-2': [
-        { id: 'msg-5', conversationId: 'conv-2', senderId: 'user-1', text: 'Hello, I\'m interested in the biology textbook.', timestamp: '2023-11-09T14:30:00Z' },
-    ],
-};
+export const messages: Record<string, Message[]> = {};
