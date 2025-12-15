@@ -68,7 +68,7 @@ export default function ContactPage() {
             </div>
             <div className="flex items-center gap-4">
               <Phone className="h-5 w-5 text-primary" />
-              <span>no numbber contact yet</span>
+              <span>no number contact yet</span>
             </div>
             <div className="flex items-start gap-4">
               <MapPin className="h-5 w-5 text-primary mt-1" />
