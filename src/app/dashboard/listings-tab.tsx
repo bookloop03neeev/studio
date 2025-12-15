@@ -167,7 +167,7 @@ export function ListingsTab() {
             <AlertDialogDescription>
               This action cannot be undone. This will permanently delete your
               listing for &quot;{bookToDelete?.title}&quot;.
-            </AlertDialogDescription>
+            </Lad AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setBookToDelete(null)}>Cancel</AlertDialogCancel>
