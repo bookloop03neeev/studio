@@ -29,7 +29,7 @@ export default function BookDetailPage() {
     const sellerRef = useMemoFirebase(() => {
         if (!firestore || !book?.sellerId) return null;
         return doc(firestore, 'users', book.sellerId);
-    }, [firestore, book]);
+    }, [firestore, book?.sellerId]);
 
     const { data: seller, isLoading: isSellerLoading } = useDoc<User>(sellerRef);
 
