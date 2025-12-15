@@ -32,7 +32,7 @@ import type { GradeLevel, Book } from '@/lib/types';
 import { books as staticBooks } from '@/lib/data';
 import Image from 'next/image';
 
-const gradeLevels: GradeLevel[] = ['8', '9', '10', '11', '12', 'College'];
+const gradeLevels: GradeLevel[] = ['8', '9', '10', '11', '12'];
 
 const formSchema = z.object({
   title: z.string().min(2, 'Title must be at least 2 characters.'),
@@ -48,7 +48,6 @@ export function SellForm() {
   const { toast } = useToast();
   const router = useRouter();
   const [preview, setPreview] = useState<string | null>(null);
-  const [imageHint, setImageHint] = useState('book cover');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -73,14 +72,14 @@ export function SellForm() {
   };
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    const existingBooks: Book[] = JSON.parse(localStorage.getItem('books') || '[]');
+    const existingBooks: Book[] = JSON.parse(localStorage.getItem('books') || '[]')
     const allBooks = [...staticBooks, ...existingBooks];
 
     const newBook: Book = {
         id: `book-${allBooks.length + 1}`,
         sellerId: 'user-1', // Mock current user
         imageUrl: preview || '',
-        imageHint: imageHint,
+        imageHint: "book cover",
         ...values,
     };
 
@@ -92,6 +91,7 @@ export function SellForm() {
       description: `Your book "${values.title}" has been listed for sale.`,
     });
     form.reset();
+    setPreview(null);
     router.push('/books');
   }
 

@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import { books, users } from '@/lib/data';
+import { books } from '@/lib/data';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -8,9 +8,18 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { MessageCircle } from 'lucide-react';
 import Link from 'next/link';
+import { users } from '@/lib/data';
 
 export default function BookDetailPage({ params }: { params: { id: string } }) {
-  const book = books.find((b) => b.id === params.id);
+    let allBooks = [];
+    if (typeof window !== 'undefined') {
+        allBooks = [...books, ...JSON.parse(localStorage.getItem('books') || '[]')];
+    } else {
+        allBooks = books;
+    }
+
+    const book = allBooks.find((b) => b.id === params.id);
+
 
   if (!book) {
     notFound();
@@ -40,6 +49,11 @@ export default function BookDetailPage({ params }: { params: { id: string } }) {
             <h1 className="text-3xl md:text-4xl font-bold font-headline">{book.title}</h1>
             <p className="text-xl text-muted-foreground mt-1">by {book.author}</p>
           </div>
+          
+          <div>
+            <h2 className="text-lg font-semibold mb-2">Description</h2>
+            <p className="text-foreground/80 leading-relaxed">{book.description}</p>
+          </div>
 
           <div className="flex items-center gap-4">
             <Badge variant="outline" className="text-sm">{book.condition}</Badge>
@@ -52,12 +66,7 @@ export default function BookDetailPage({ params }: { params: { id: string } }) {
 
           <Separator />
           
-          <div>
-            <h2 className="text-lg font-semibold mb-2">Description</h2>
-            <p className="text-foreground/80 leading-relaxed">{book.description}</p>
-          </div>
           
-          <Separator />
 
           {seller && (
             <Card>
