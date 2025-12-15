@@ -3,28 +3,37 @@
 
 import { notFound, useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { users } from '@/lib/data';
-import type { Book, Conversation } from '@/lib/types';
+import type { Book, Conversation, User } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { MessageCircle, Loader2 } from 'lucide-react';
-import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
 export default function BookDetailPage() {
     const params = useParams<{ id: string }>();
     const router = useRouter();
     const firestore = useFirestore();
+    const { user: currentUser } = useUser();
 
     const bookRef = useMemoFirebase(() => {
         if (!firestore || !params.id) return null;
         return doc(firestore, 'bookListings', params.id);
     }, [firestore, params.id]);
 
-    const { data: book, isLoading } = useDoc<Book>(bookRef);
+    const { data: book, isLoading: isBookLoading } = useDoc<Book>(bookRef);
+
+    const sellerRef = useMemoFirebase(() => {
+        if (!firestore || !book?.sellerId) return null;
+        return doc(firestore, 'users', book.sellerId);
+    }, [firestore, book]);
+
+    const { data: seller, isLoading: isSellerLoading } = useDoc<User>(sellerRef);
+
+    const isLoading = isBookLoading || isSellerLoading;
 
     const handleContactSeller = () => {
         if (!book) return;
@@ -70,8 +79,6 @@ export default function BookDetailPage() {
     if (!book) {
         notFound();
     }
-
-    const seller = users.find((u) => u.id === book.sellerId);
 
     return (
         <div className="container mx-auto max-w-5xl py-8 md:py-12">
@@ -121,15 +128,17 @@ export default function BookDetailPage() {
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-4">
                                         <Avatar>
-                                            <AvatarImage src={seller.avatarUrl} alt={seller.name} data-ai-hint={seller.imageHint} />
-                                            <AvatarFallback>{seller.name.charAt(0)}</AvatarFallback>
+                                            <AvatarImage src={seller.avatarUrl} alt={seller.userName} data-ai-hint={seller.imageHint} />
+                                            <AvatarFallback>{seller.userName.charAt(0)}</AvatarFallback>
                                         </Avatar>
-                                        <p className="font-semibold">{seller.name}</p>
+                                        <p className="font-semibold">{seller.userName}</p>
                                     </div>
-                                    <Button onClick={handleContactSeller}>
-                                        <MessageCircle className="mr-2 h-4 w-4" />
-                                        Contact Seller
-                                    </Button>
+                                    {currentUser && currentUser.uid !== seller.id && (
+                                        <Button onClick={handleContactSeller}>
+                                            <MessageCircle className="mr-2 h-4 w-4" />
+                                            Contact Seller
+                                        </Button>
+                                    )}
                                 </div>
                             </CardContent>
                         </Card>

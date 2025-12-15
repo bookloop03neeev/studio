@@ -3,7 +3,7 @@ import type { Timestamp } from "firebase/firestore";
 
 export type User = {
   id: string;
-  name: string;
+  userName: string;
   avatarUrl: string;
   imageHint: string;
   email: string;
