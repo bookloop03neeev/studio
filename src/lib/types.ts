@@ -5,7 +5,7 @@ export type User = {
   imageHint: string;
 };
 
-export type GradeLevel = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10' | '11' | '12' | 'College';
+export type GradeLevel = '8' | '9' | '10' | '11' | '12';
 
 export type Book = {
   id: string;

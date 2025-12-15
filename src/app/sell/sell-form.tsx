@@ -27,7 +27,7 @@ import { useToast } from '@/hooks/use-toast';
 import { UploadCloud } from 'lucide-react';
 import type { GradeLevel } from '@/lib/types';
 
-const gradeLevels: GradeLevel[] = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', 'College'];
+const gradeLevels: GradeLevel[] = ['8', '9', '10', '11', '12'];
 
 const formSchema = z.object({
   title: z.string().min(2, 'Title must be at least 2 characters.'),
