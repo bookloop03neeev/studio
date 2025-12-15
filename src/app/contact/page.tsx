@@ -73,8 +73,7 @@ export default function ContactPage() {
             <div className="flex items-start gap-4">
               <MapPin className="h-5 w-5 text-primary mt-1" />
               <span>
-                123 University Ave<br />
-                Student City, SC 45678
+                S.K.V Vivek Vihar
               </span>
             </div>
           </div>
