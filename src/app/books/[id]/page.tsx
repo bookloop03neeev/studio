@@ -129,7 +129,7 @@ export default function BookDetailPage() {
                                     <div className="flex items-center gap-4">
                                         <Avatar>
                                             <AvatarImage src={seller.avatarUrl} alt={seller.userName} data-ai-hint={seller.imageHint} />
-                                            <AvatarFallback>{seller.userName.charAt(0)}</AvatarFallback>
+                                            <AvatarFallback>{seller.userName?.charAt(0)}</AvatarFallback>
                                         </Avatar>
                                         <p className="font-semibold">{seller.userName}</p>
                                     </div>

@@ -7,6 +7,9 @@ export type User = {
   avatarUrl: string;
   imageHint: string;
   email: string;
+  firstName: string;
+  lastName: string;
+  registrationDate: string;
 };
 
 export type GradeLevel = '8' | '9' | '10' | '11' | '12' | 'College';
