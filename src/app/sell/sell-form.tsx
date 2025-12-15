@@ -32,7 +32,7 @@ import type { GradeLevel, Book } from '@/lib/types';
 import { books as staticBooks } from '@/lib/data';
 import Image from 'next/image';
 
-const gradeLevels: GradeLevel[] = ['8', '9', '10', '11', '12'];
+const gradeLevels: GradeLevel[] = ['8', '9', '10', '11', '12', 'College'];
 
 const formSchema = z.object({
   title: z.string().min(2, 'Title must be at least 2 characters.'),
@@ -44,7 +44,7 @@ const formSchema = z.object({
   image: z.any().refine(file => file instanceof File, 'Image is required.'),
 });
 
-export function SellForm() {
+export function SellForm({ userId }: { userId: string }) {
   const { toast } = useToast();
   const router = useRouter();
   const [preview, setPreview] = useState<string | null>(null);
@@ -77,7 +77,7 @@ export function SellForm() {
 
     const newBook: Book = {
         id: `book-${allBooks.length + 1}`,
-        sellerId: 'user-1', // Mock current user
+        sellerId: userId,
         imageUrl: preview || '',
         imageHint: "book cover",
         ...values,
@@ -176,7 +176,7 @@ export function SellForm() {
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select target grade level" />
-                  </SelectTrigger>
+                  </Trigger>
                 </FormControl>
                 <SelectContent>
                   {gradeLevels.map((level) => (
@@ -260,5 +260,3 @@ export function SellForm() {
     </Form>
   );
 }
-
-    
