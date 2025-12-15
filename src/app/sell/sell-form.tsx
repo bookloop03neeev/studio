@@ -29,7 +29,7 @@ import { UploadCloud } from 'lucide-react';
 const formSchema = z.object({
   title: z.string().min(2, 'Title must be at least 2 characters.'),
   author: z.string().min(2, 'Author must be at least 2 characters.'),
-  price: z.coerce.number().positive('Price must be a positive number.'),
+  price: z.coerce.number().int().positive('Price must be a positive number.'),
   condition: z.enum(['New', 'Like New', 'Good', 'Fair']),
   gradeLevel: z.enum(['K-5', '6-8', '9-12', 'College']),
   description: z.string().min(10, 'Description must be at least 10 characters.'),
@@ -97,7 +97,7 @@ export function SellForm() {
                 <FormItem>
                 <FormLabel>Price (₹)</FormLabel>
                 <FormControl>
-                    <Input type="number" step="0.01" placeholder="3500.00" {...field} />
+                    <Input type="number" step="1" placeholder="3500" {...field} />
                 </FormControl>
                 <FormMessage />
                 </FormItem>

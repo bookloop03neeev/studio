@@ -32,7 +32,7 @@ export function PurchasesTab() {
               userPurchases.map((purchase) => (
                 <TableRow key={purchase.id}>
                   <TableCell className="font-medium">{purchase.title}</TableCell>
-                  <TableCell className="hidden sm:table-cell">₹{purchase.purchasePrice.toFixed(2)}</TableCell>
+                  <TableCell className="hidden sm:table-cell">₹{purchase.purchasePrice}</TableCell>
                   <TableCell className="hidden md:table-cell">
                     {new Date(purchase.purchaseDate).toLocaleDateString()}
                   </TableCell>

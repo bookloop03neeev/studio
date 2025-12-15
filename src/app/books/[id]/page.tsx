@@ -46,7 +46,7 @@ export default function BookDetailPage({ params }: { params: { id: string } }) {
             <Badge variant="outline" className="text-sm">{book.gradeLevel}</Badge>
           </div>
 
-          <p className="text-4xl font-bold text-primary">₹{book.price.toFixed(2)}</p>
+          <p className="text-4xl font-bold text-primary">₹{book.price}</p>
 
           <Separator />
           

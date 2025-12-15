@@ -32,7 +32,7 @@ export function SalesTab() {
               userSales.map((sale) => (
                 <TableRow key={sale.id}>
                   <TableCell className="font-medium">{sale.title}</TableCell>
-                  <TableCell className="hidden sm:table-cell">₹{sale.soldPrice.toFixed(2)}</TableCell>
+                  <TableCell className="hidden sm:table-cell">₹{sale.soldPrice}</TableCell>
                   <TableCell className="hidden md:table-cell">
                     {new Date(sale.soldDate).toLocaleDateString()}
                   </TableCell>

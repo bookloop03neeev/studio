@@ -22,7 +22,7 @@ export function BookCard({ book }: { book: Book }) {
           <h3 className="font-headline font-bold text-base leading-snug truncate">{book.title}</h3>
           <p className="text-sm text-muted-foreground mb-3">{book.author}</p>
           <div className="flex justify-between items-center mt-auto pt-2">
-            <p className="text-lg font-bold text-primary">₹{book.price.toFixed(2)}</p>
+            <p className="text-lg font-bold text-primary">₹{book.price}</p>
             <Badge variant="secondary">{book.condition}</Badge>
           </div>
         </CardContent>
