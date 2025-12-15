@@ -8,9 +8,9 @@
     },
     {
       "id": "about-us-image",
-      "description": "A well-lit library with shelves full of books",
-      "imageUrl": "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxsaWJyYXJ5fGVufDB8fHx8MTc2NTg5MzY0N3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "library books"
+      "description": "A stack of used books ready to be shared.",
+      "imageUrl": "https://images.unsplash.com/photo-1507842217343-583bb7270b66?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHx1c2VkJTIwYm9va3N8ZW58MHx8fHwxNzY1OTk4ODU5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "used books"
     },
     {
       "id": "user-1",
@@ -35,6 +35,36 @@
       "description": "Avatar for Beth Green",
       "imageUrl": "https://images.unsplash.com/photo-1540569014015-19a7be504e3a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjU3NzMxMTR8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "person portrait"
+    },
+    {
+      "id": "ncert-physics",
+      "description": "NCERT Physics textbook cover",
+      "imageUrl": "https://images.unsplash.com/photo-1749661190411-7394e0fa37f2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwaHlzaWNzJTIwdGV4dGJvb2t8ZW58MHx8fHwxNzY1NzI2MTE1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "physics textbook"
+    },
+    {
+      "id": "ncert-chemistry",
+      "description": "NCERT Chemistry textbook cover",
+      "imageUrl": "https://images.unsplash.com/photo-1758685733395-dba201403b4d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjaGVtaXN0cnklMjB0ZXh0Ym9va3xlbnwwfHx8fDE3NjU3OTcwMTR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "chemistry textbook"
+    },
+    {
+      "id": "ncert-maths",
+      "description": "NCERT Maths textbook cover",
+      "imageUrl": "https://images.unsplash.com/photo-1711613160734-11caf3ce151d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYXRocyUyMHRleHRib29rfGVufDB8fHx8MTc2NTc5NzAxNHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "maths textbook"
+    },
+    {
+      "id": "ncert-biology",
+      "description": "NCERT Biology textbook cover",
+      "imageUrl": "https://images.unsplash.com/photo-1761079398533-4526e93d2884?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxiaW9sb2d5JTIwdGV4dGJvb2t8ZW58MHx8fHwxNzY1Nzk3MDE0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "biology textbook"
+    },
+    {
+      "id": "ncert-english",
+      "description": "NCERT English textbook cover",
+      "imageUrl": "https://images.unsplash.com/photo-1696831386031-606c4c49d792?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZW5nbGlzaCUyMHRleHRib29rfGVufDB8fHx8MTc2NTc5NzAxNHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "english textbook"
     }
   ]
 }
