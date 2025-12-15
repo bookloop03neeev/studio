@@ -68,7 +68,7 @@ export default function ContactPage() {
             </div>
             <div className="flex items-center gap-4">
               <Phone className="h-5 w-5 text-primary" />
-              <span>+1 (555) 123-4567</span>
+              <span>no numbber contact yet</span>
             </div>
             <div className="flex items-start gap-4">
               <MapPin className="h-5 w-5 text-primary mt-1" />
