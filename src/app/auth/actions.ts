@@ -1,0 +1,32 @@
+
+'use server';
+
+import { initializeFirebase } from '@/firebase';
+import { doc, setDoc } from 'firebase/firestore';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
+
+type CreateUserProfilePayload = {
+    userId: string;
+    firstName: string;
+    lastName: string;
+    displayName: string;
+    email: string;
+}
+
+export async function createUserProfile(payload: CreateUserProfilePayload) {
+    const { firestore } = initializeFirebase();
+    const userRef = doc(firestore, 'users', payload.userId);
+
+    const userAvatar = PlaceHolderImages.find(p => p.id === 'user-1');
+
+    await setDoc(userRef, {
+        id: payload.userId,
+        firstName: payload.firstName,
+        lastName: payload.lastName,
+        userName: payload.displayName,
+        email: payload.email,
+        registrationDate: new Date().toISOString(),
+        avatarUrl: userAvatar?.imageUrl || '',
+        imageHint: userAvatar?.imageHint || 'person portrait',
+    });
+}
