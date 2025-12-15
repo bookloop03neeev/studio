@@ -15,7 +15,7 @@ export function Footer() {
         <nav className="flex gap-4 sm:gap-6 text-sm text-muted-foreground">
           <Link href="/about" className="hover:text-primary transition-colors">About</Link>
           <Link href="/contact" className="hover:text-primary transition-colors">Contact</Link>
-          <Link href="#" className="hover:text-primary transition-colors">Terms of Service</Link>
+          <Link href="/terms" className="hover:text-primary transition-colors">Terms of Service</Link>
           <Link href="#" className="hover:text-primary transition-colors">Privacy Policy</Link>
         </nav>
       </div>
