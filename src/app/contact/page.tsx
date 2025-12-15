@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -61,8 +62,8 @@ export default function ContactPage() {
           <div className="space-y-4 text-foreground/90">
             <div className="flex items-center gap-4">
               <Mail className="h-5 w-5 text-primary" />
-              <a href="mailto:support@bookloop.com" className="hover:underline">
-                support@bookloop.com
+              <a href="mailto:bookloop03@gmail.com" className="hover:underline">
+                bookloop03@gmail.com
               </a>
             </div>
             <div className="flex items-center gap-4">
