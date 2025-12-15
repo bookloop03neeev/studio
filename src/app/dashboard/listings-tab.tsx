@@ -67,7 +67,7 @@ export function ListingsTab() {
     localStorage.setItem('books', JSON.stringify(updatedLocalListings));
 
     setListings(listings.filter(book => book.id !== bookToDelete.id));
-    setBookToDelete(null);
+    // No longer setting book to delete to null here.
   };
 
 
@@ -170,7 +170,7 @@ export function ListingsTab() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setBookToDelete(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
