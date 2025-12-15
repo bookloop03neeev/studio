@@ -21,7 +21,7 @@ export default function BooksPage() {
     <div className="container mx-auto py-12">
       <div className="space-y-2 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold font-headline">
-          All Books
+          available books
         </h1>
         <p className="text-muted-foreground">
           look for anything book you want!
