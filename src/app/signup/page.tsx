@@ -30,6 +30,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/firebase';
 import { Loader2 } from 'lucide-react';
 import { createUserProfile } from '../auth/actions';
+import { ToastAction } from '@/components/ui/toast';
 
 const formSchema = z.object({
   firstName: z.string().min(1, { message: 'First name is required' }),
@@ -82,17 +83,25 @@ export default function SignUpPage() {
       router.push('/dashboard');
     } catch (error: any) {
       console.error('Sign Up Error:', error);
-      let description = 'An unknown error occurred. Please try again.';
+      
       if (error.code === 'auth/email-already-in-use') {
-        description = 'An account with this email already exists. Please log in instead.';
+        toast({
+            variant: 'destructive',
+            title: 'Sign Up Failed',
+            description: 'An account with this email already exists.',
+            action: (
+                <ToastAction altText="Login" onClick={() => router.push('/login')}>
+                  Login
+                </ToastAction>
+            )
+          });
       } else {
-        description = error.message;
+        toast({
+            variant: 'destructive',
+            title: 'Sign Up Failed',
+            description: error.message || 'An unknown error occurred. Please try again.',
+          });
       }
-      toast({
-        variant: 'destructive',
-        title: 'Sign Up Failed',
-        description: description,
-      });
     } finally {
       setIsLoading(false);
     }
