@@ -3,12 +3,12 @@ import type { Timestamp } from "firebase/firestore";
 
 export type User = {
   id: string;
-  userName: string;
-  avatarUrl: string;
+  displayName: string;
+  photoURL: string;
   imageHint: string;
   email: string;
   firstName: string;
-  lastName: string;
+  lastName:string;
   registrationDate: string;
 };
 

@@ -128,10 +128,10 @@ export default function BookDetailPage() {
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-4">
                                         <Avatar>
-                                            <AvatarImage src={seller.avatarUrl} alt={seller.userName} data-ai-hint={seller.imageHint} />
-                                            <AvatarFallback>{seller.userName?.charAt(0)}</AvatarFallback>
+                                            <AvatarImage src={seller.photoURL} alt={seller.displayName} data-ai-hint={seller.imageHint} />
+                                            <AvatarFallback>{seller.displayName?.charAt(0)}</AvatarFallback>
                                         </Avatar>
-                                        <p className="font-semibold">{seller.userName}</p>
+                                        <p className="font-semibold">{seller.displayName}</p>
                                     </div>
                                     {currentUser && currentUser.uid !== seller.id && (
                                         <Button onClick={handleContactSeller}>

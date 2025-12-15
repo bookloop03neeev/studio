@@ -23,10 +23,10 @@ export async function createUserProfile(payload: CreateUserProfilePayload) {
         id: payload.userId,
         firstName: payload.firstName,
         lastName: payload.lastName,
-        userName: payload.displayName,
+        displayName: payload.displayName,
         email: payload.email,
         registrationDate: new Date().toISOString(),
-        avatarUrl: userAvatar?.imageUrl || '',
+        photoURL: userAvatar?.imageUrl || '',
         imageHint: userAvatar?.imageHint || 'person portrait',
     };
 
