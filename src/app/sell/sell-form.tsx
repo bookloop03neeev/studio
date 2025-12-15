@@ -25,13 +25,16 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { UploadCloud } from 'lucide-react';
+import type { GradeLevel } from '@/lib/types';
+
+const gradeLevels: GradeLevel[] = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', 'College'];
 
 const formSchema = z.object({
   title: z.string().min(2, 'Title must be at least 2 characters.'),
   author: z.string().min(2, 'Author must be at least 2 characters.'),
   price: z.coerce.number().int().positive('Price must be a positive number.'),
   condition: z.enum(['New', 'Like New', 'Good', 'Fair']),
-  gradeLevel: z.enum(['6-8', '9-12']),
+  gradeLevel: z.enum(gradeLevels),
   description: z.string().min(10, 'Description must be at least 10 characters.'),
   image: z.any().optional(),
 });
@@ -142,9 +145,9 @@ export function SellForm() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {['6-8', '9-12'].map((level) => (
+                  {gradeLevels.map((level) => (
                     <SelectItem key={level} value={level}>
-                      {level}
+                      {level === 'College' ? 'College' : `Grade ${level}`}
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -43,7 +43,9 @@ export default function BookDetailPage({ params }: { params: { id: string } }) {
 
           <div className="flex items-center gap-4">
             <Badge variant="outline" className="text-sm">{book.condition}</Badge>
-            <Badge variant="outline" className="text-sm">{book.gradeLevel}</Badge>
+            <Badge variant="outline" className="text-sm">
+              {book.gradeLevel === 'College' ? 'College' : `Grade ${book.gradeLevel}`}
+            </Badge>
           </div>
 
           <p className="text-4xl font-bold text-primary">₹{book.price}</p>
