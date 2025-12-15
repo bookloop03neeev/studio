@@ -82,10 +82,16 @@ export default function SignUpPage() {
       router.push('/dashboard');
     } catch (error: any) {
       console.error('Sign Up Error:', error);
+      let description = 'An unknown error occurred. Please try again.';
+      if (error.code === 'auth/email-already-in-use') {
+        description = 'An account with this email already exists. Please log in instead.';
+      } else {
+        description = error.message;
+      }
       toast({
         variant: 'destructive',
         title: 'Sign Up Failed',
-        description: error.message || 'An unknown error occurred.',
+        description: description,
       });
     } finally {
       setIsLoading(false);
