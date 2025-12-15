@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Book, LogOut, LayoutDashboard } from 'lucide-react';
+import { Menu, Book, LogOut, LayoutDashboard, MessageSquare } from 'lucide-react';
 import { users } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
@@ -25,7 +25,7 @@ export function Header() {
   const user = users.find(u => u.id === 'user-1'); // Mock logged-in user
 
   const navItems = [
-    { href: '/', label: 'Browse' },
+    { href: '/books', label: 'Browse' },
     { href: '/sell', label: 'Sell a Book' },
   ];
 
@@ -125,7 +125,7 @@ export function Header() {
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/messages">
-                      <Book className="mr-2 h-4 w-4" />
+                      <MessageSquare className="mr-2 h-4 w-4" />
                       <span>Messages</span>
                     </Link>
                   </DropdownMenuItem>
