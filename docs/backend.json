@@ -61,7 +61,6 @@
       "required": [
         "sellerId",
         "title",
-        "author",
         "condition",
         "gradeLevel",
         "price",

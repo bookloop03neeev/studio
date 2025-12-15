@@ -37,7 +37,7 @@ const gradeLevels: GradeLevel[] = ['8', '9', '10', '11', '12', 'College'];
 
 const formSchema = z.object({
   title: z.string().min(2, 'Title must be at least 2 characters.'),
-  author: z.string().min(2, 'Author must be at least 2 characters.'),
+  author: z.string().optional(),
   price: z.coerce.number().int().positive('Price must be a positive number.'),
   condition: z.enum(['New', 'Like New', 'Good', 'Fair']),
   gradeLevel: z.enum(gradeLevels),
@@ -129,7 +129,7 @@ export function SellForm({ userId }: { userId: string }) {
             name="author"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Author</FormLabel>
+                <FormLabel>Author (Optional)</FormLabel>
                 <FormControl>
                   <Input placeholder="e.g., N. Gregory Mankiw" {...field} />
                 </FormControl>
