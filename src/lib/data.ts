@@ -114,11 +114,11 @@ export const books: Book[] = [
 
 export const userListings = books.filter(book => book.sellerId === 'user-1');
 export const userSales = [
-  { ...books[1], soldPrice: 55.00, soldDate: '2023-10-15', buyer: 'user-4' },
-  { ...books[3], soldPrice: 5.00, soldDate: '2023-09-01', buyer: 'user-3' },
+  { ...books[1], soldPrice: 55, soldDate: '2023-10-15', buyer: 'user-4' },
+  { ...books[3], soldPrice: 5, soldDate: '2023-09-01', buyer: 'user-3' },
 ];
 export const userPurchases = [
-  { ...books[2], purchasePrice: 60.50, purchaseDate: '2023-08-20', seller: 'user-3' },
+  { ...books[2], purchasePrice: 60, purchaseDate: '2023-08-20', seller: 'user-3' },
 ];
 
 export const conversations: (Conversation & { otherUser: User, book: Book })[] = [
