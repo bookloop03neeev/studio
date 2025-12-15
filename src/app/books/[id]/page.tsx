@@ -96,7 +96,7 @@ export default function BookDetailPage() {
                                         <p className="font-semibold">{seller.name}</p>
                                     </div>
                                     <Button asChild>
-                                        <Link href="/messages/conv-1">
+                                        <Link href="/messages/new">
                                             <MessageCircle className="mr-2 h-4 w-4" />
                                             Contact Seller
                                         </Link>
