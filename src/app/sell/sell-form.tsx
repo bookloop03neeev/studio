@@ -333,7 +333,7 @@ export function SellForm({ userId }: { userId: string }) {
                             Meet at a designated pickup point (Fee: ₹5)
                         </FormLabel>
                         <p className={cn("text-sm text-muted-foreground")}>
-                            pickup point : school gate after school ended.
+                            pickup point: school gate at 12:30 to 12:55
                         </p>
                     </div>
                   </FormItem>
