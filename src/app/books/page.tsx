@@ -24,7 +24,7 @@ export default function BooksPage() {
           All Books
         </h1>
         <p className="text-muted-foreground">
-          Browse all the books available for sale.
+          look for anything book you want!
         </p>
       </div>
       {loading ? (
