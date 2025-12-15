@@ -1,9 +1,11 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -28,6 +30,7 @@ import { useToast } from '@/hooks/use-toast';
 import { UploadCloud } from 'lucide-react';
 import type { GradeLevel, Book } from '@/lib/types';
 import { books as staticBooks } from '@/lib/data';
+import Image from 'next/image';
 
 const gradeLevels: GradeLevel[] = ['8', '9', '10', '11', '12', 'College'];
 
@@ -38,12 +41,14 @@ const formSchema = z.object({
   condition: z.enum(['New', 'Like New', 'Good', 'Fair']),
   gradeLevel: z.enum(gradeLevels),
   description: z.string().min(10, 'Description must be at least 10 characters.'),
-  image: z.any().optional(),
+  image: z.any().refine(file => file instanceof File, 'Image is required.'),
 });
 
 export function SellForm() {
   const { toast } = useToast();
   const router = useRouter();
+  const [preview, setPreview] = useState<string | null>(null);
+  const [imageHint, setImageHint] = useState('book cover');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -55,6 +60,18 @@ export function SellForm() {
     },
   });
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      form.setValue('image', file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     const existingBooks: Book[] = JSON.parse(localStorage.getItem('books') || '[]');
     const allBooks = [...staticBooks, ...existingBooks];
@@ -62,8 +79,8 @@ export function SellForm() {
     const newBook: Book = {
         id: `book-${allBooks.length + 1}`,
         sellerId: 'user-1', // Mock current user
-        imageUrl: 'https://picsum.photos/seed/newbook/400/600',
-        imageHint: 'book cover',
+        imageUrl: preview || '',
+        imageHint: imageHint,
         ...values,
     };
 
@@ -193,24 +210,55 @@ export function SellForm() {
             </FormItem>
           )}
         />
-        <FormItem>
-            <FormLabel>Book Cover Image</FormLabel>
-            <FormControl>
+        <FormField
+          control={form.control}
+          name="image"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Book Cover Image</FormLabel>
+              <FormControl>
                 <div className="flex items-center justify-center w-full">
-                    <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted transition-colors">
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <UploadCloud className="w-8 h-8 mb-4 text-muted-foreground" />
-                            <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                            <p className="text-xs text-muted-foreground">PNG, JPG or WEBP (MAX. 800x400px)</p>
-                        </div>
-                        <Input id="dropzone-file" type="file" className="hidden" />
-                    </label>
-                </div> 
-            </FormControl>
-        </FormItem>
+                  <label
+                    htmlFor="dropzone-file"
+                    className="relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted transition-colors"
+                  >
+                    {preview ? (
+                      <Image
+                        src={preview}
+                        alt="Book cover preview"
+                        fill
+                        className="object-contain rounded-md"
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <UploadCloud className="w-8 h-8 mb-4 text-muted-foreground" />
+                        <p className="mb-2 text-sm text-muted-foreground">
+                          <span className="font-semibold">Click to upload</span> or drag and drop
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          PNG, JPG or WEBP (MAX. 800x400px)
+                        </p>
+                      </div>
+                    )}
+                    <Input
+                      id="dropzone-file"
+                      type="file"
+                      className="hidden"
+                      accept="image/png, image/jpeg, image/webp"
+                      onChange={handleImageChange}
+                    />
+                  </label>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <Button type="submit" size="lg">Create Listing</Button>
       </form>
     </Form>
   );
 }
+
+    
