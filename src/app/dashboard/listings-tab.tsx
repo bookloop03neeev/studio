@@ -21,8 +21,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MoreHorizontal, Edit, Trash2 } from 'lucide-react';
-import { books as staticBooks } from '@/lib/data';
+import { MoreHorizontal, Edit, Trash2, Loader2 } from 'lucide-react';
 import type { Book } from '@/lib/types';
 import { useState, useEffect } from 'react';
 import {
@@ -34,41 +33,56 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
+import { useUser } from '@/firebase';
 
 
 export function ListingsTab() {
+  const { user, isUserLoading } = useUser();
   const [listings, setListings] = useState<Book[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [bookToDelete, setBookToDelete] = useState<Book | null>(null);
 
   useEffect(() => {
-    const userListings = staticBooks.filter(book => book.sellerId === 'user-1');
-    const localListings : Book[] = JSON.parse(localStorage.getItem('books') || '[]');
-    const userLocalListings = localListings.filter(book => book.sellerId === 'user-1');
+    if (isUserLoading) {
+      return;
+    }
     
-    const allUserListings = [...userListings];
-    const userListingIds = new Set(userListings.map(b => b.id));
-
-    userLocalListings.forEach(localBook => {
-        if (!userListingIds.has(localBook.id)) {
-            allUserListings.push(localBook);
+    if (user) {
+        try {
+            const localListings : Book[] = JSON.parse(localStorage.getItem('books') || '[]');
+            const userLocalListings = localListings.filter(book => book.sellerId === user.uid);
+            setListings(userLocalListings);
+        } catch (error) {
+            console.error("Failed to parse listings from localStorage", error);
         }
-    });
-
-    setListings(allUserListings);
-  }, []);
+    } else {
+        // If there's no user, there are no listings to show.
+        setListings([]);
+    }
+    setIsLoading(false);
+  }, [user, isUserLoading]);
 
   const handleDelete = () => {
     if (!bookToDelete) return;
 
-    // We can only delete from localStorage, not from the static data array
+    // We can only delete from localStorage
     const localListings: Book[] = JSON.parse(localStorage.getItem('books') || '[]');
     const updatedLocalListings = localListings.filter(book => book.id !== bookToDelete.id);
     localStorage.setItem('books', JSON.stringify(updatedLocalListings));
 
     setListings(listings.filter(book => book.id !== bookToDelete.id));
-    // No longer setting book to delete to null here.
+    setBookToDelete(null); 
   };
+
+
+  if (isLoading || isUserLoading) {
+    return (
+        <div className="flex justify-center items-center h-48">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+    )
+  }
 
 
   return (
@@ -138,7 +152,6 @@ export function ListingsTab() {
                           <DropdownMenuItem 
                             className="text-destructive focus:text-destructive"
                             onClick={() => setBookToDelete(book)}
-                            disabled={staticBooks.some(b => b.id === book.id)}
                             >
                               <Trash2 className="mr-2 h-4 w-4" />
                               Delete
