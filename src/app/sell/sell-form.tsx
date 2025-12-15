@@ -95,9 +95,9 @@ export function SellForm() {
             name="price"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>Price ($)</FormLabel>
+                <FormLabel>Price (₹)</FormLabel>
                 <FormControl>
-                    <Input type="number" step="0.01" placeholder="45.00" {...field} />
+                    <Input type="number" step="0.01" placeholder="3500.00" {...field} />
                 </FormControl>
                 <FormMessage />
                 </FormItem>

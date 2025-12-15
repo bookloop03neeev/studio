@@ -64,7 +64,7 @@ export function ListingsTab() {
                     <Badge variant="outline">{book.condition}</Badge>
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
-                    ${book.price.toFixed(2)}
+                    ₹{book.price.toFixed(2)}
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
