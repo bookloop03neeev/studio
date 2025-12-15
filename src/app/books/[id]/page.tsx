@@ -2,11 +2,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { notFound, useParams } from 'next/navigation';
+import { notFound, useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { books as staticBooks } from '@/lib/data';
-import { users } from '@/lib/data';
-import type { Book } from '@/lib/types';
+import { books as staticBooks, users } from '@/lib/data';
+import type { Book, Conversation } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -17,6 +16,7 @@ import Link from 'next/link';
 
 export default function BookDetailPage() {
     const params = useParams<{ id: string }>();
+    const router = useRouter();
     const [book, setBook] = useState<Book | null | undefined>(undefined);
 
     useEffect(() => {
@@ -27,6 +27,40 @@ export default function BookDetailPage() {
             setBook(foundBook || null);
         }
     }, [params.id]);
+
+    const handleContactSeller = () => {
+        if (!book) return;
+
+        const locallyStoredConversations: Conversation[] = JSON.parse(localStorage.getItem('conversations') || '[]');
+        
+        const existingConversation = locallyStoredConversations.find(
+            c => c.bookId === book.id && c.userId === book.sellerId
+        );
+
+        if (existingConversation) {
+            router.push(`/messages/${existingConversation.id}`);
+            return;
+        }
+
+        const newConversation: Conversation = {
+            id: `convo-${Date.now()}`,
+            userId: book.sellerId,
+            bookId: book.id,
+        };
+
+        const updatedConversations = [...locallyStoredConversations, newConversation];
+        localStorage.setItem('conversations', JSON.stringify(updatedConversations));
+
+        // Optionally, create an initial message
+        const locallyStoredMessages = JSON.parse(localStorage.getItem('messages') || '{}');
+        if (!locallyStoredMessages[newConversation.id]) {
+            locallyStoredMessages[newConversation.id] = [];
+        }
+        localStorage.setItem('messages', JSON.stringify(locallyStoredMessages));
+
+        router.push(`/messages/${newConversation.id}`);
+    };
+
 
     if (book === undefined) {
         return (
@@ -95,11 +129,9 @@ export default function BookDetailPage() {
                                         </Avatar>
                                         <p className="font-semibold">{seller.name}</p>
                                     </div>
-                                    <Button asChild>
-                                        <Link href="/messages/new">
-                                            <MessageCircle className="mr-2 h-4 w-4" />
-                                            Contact Seller
-                                        </Link>
+                                    <Button onClick={handleContactSeller}>
+                                        <MessageCircle className="mr-2 h-4 w-4" />
+                                        Contact Seller
                                     </Button>
                                 </div>
                             </CardContent>

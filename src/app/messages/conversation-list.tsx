@@ -2,13 +2,58 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { conversations } from '@/lib/data';
+import { useState, useEffect } from 'react';
+import { books, users } from '@/lib/data';
+import type { Conversation, User, Book } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
+type EnrichedConversation = Conversation & {
+  otherUser: User;
+  book: Book;
+};
+
 export function ConversationList() {
   const pathname = usePathname();
+  const [conversations, setConversations] = useState<EnrichedConversation[]>([]);
+
+  useEffect(() => {
+    const locallyStoredConversations: Conversation[] = JSON.parse(localStorage.getItem('conversations') || '[]');
+    const locallyStoredBooks: Book[] = JSON.parse(localStorage.getItem('books') || '[]');
+    const allBooks = [...books, ...locallyStoredBooks];
+
+    const enriched = locallyStoredConversations.map(convo => {
+      const otherUser = users.find(u => u.id === convo.userId);
+      const book = allBooks.find(b => b.id === convo.bookId);
+      
+      // This is a fallback, in a real app you'd handle this more gracefully
+      if (!otherUser || !book) {
+        return null;
+      }
+      
+      return {
+        ...convo,
+        otherUser,
+        book
+      };
+    }).filter((c): c is EnrichedConversation => c !== null);
+
+    setConversations(enriched);
+  }, [pathname]); // Rerun when path changes to see new conversations
+
+  if (conversations.length === 0) {
+    return (
+        <div className="flex flex-col h-full">
+            <div className="p-4 border-b">
+                <h2 className="text-xl font-bold font-headline">Messages</h2>
+            </div>
+            <div className="flex-1 p-4 text-center text-sm text-muted-foreground">
+                No conversations yet.
+            </div>
+        </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full">

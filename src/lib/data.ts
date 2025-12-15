@@ -121,6 +121,6 @@ export const userPurchases = [
   { ...books[2], purchasePrice: 60, purchaseDate: '2023-08-20', seller: 'user-3' },
 ];
 
-export const conversations: (Conversation & { otherUser: User, book: Book })[] = [];
+export const conversations: Conversation[] = [];
 
 export const messages: Record<string, Message[]> = {};
