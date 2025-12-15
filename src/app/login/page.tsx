@@ -62,7 +62,7 @@ export default function LoginPage() {
       console.error('Login Error:', error);
       let description = 'An unknown error occurred. Please try again.';
       if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found') {
-        description = 'Invalid email or password. Please check your credentials or sign up.';
+        description = 'Invalid credentials. No account found with that email and password. Please sign up if you are a new user.';
       } else {
         description = error.message;
       }
