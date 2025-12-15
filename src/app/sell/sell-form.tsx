@@ -26,7 +26,8 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { UploadCloud } from 'lucide-react';
-import type { GradeLevel } from '@/lib/types';
+import type { GradeLevel, Book } from '@/lib/types';
+import { books as staticBooks } from '@/lib/data';
 
 const gradeLevels: GradeLevel[] = ['8', '9', '10', '11', '12', 'College'];
 
@@ -55,7 +56,20 @@ export function SellForm() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    const existingBooks: Book[] = JSON.parse(localStorage.getItem('books') || '[]');
+    const allBooks = [...staticBooks, ...existingBooks];
+
+    const newBook: Book = {
+        id: `book-${allBooks.length + 1}`,
+        sellerId: 'user-1', // Mock current user
+        imageUrl: 'https://picsum.photos/seed/newbook/400/600',
+        imageHint: 'book cover',
+        ...values,
+    };
+
+    const updatedBooks = [...existingBooks, newBook];
+    localStorage.setItem('books', JSON.stringify(updatedBooks));
+    
     toast({
       title: 'Listing Created!',
       description: `Your book "${values.title}" has been listed for sale.`,
