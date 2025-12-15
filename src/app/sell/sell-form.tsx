@@ -39,7 +39,7 @@ const formSchema = z.object({
   title: z.string().min(2, 'Title must be at least 2 characters.'),
   author: z.string().optional(),
   price: z.coerce.number().int().positive('Price must be a positive number.'),
-  condition: z.enum(['New', 'Like New', 'Good', 'Fair']),
+  condition: z.enum(['New', 'Like New', 'Good', 'Fair', 'Worn']),
   gradeLevel: z.enum(gradeLevels),
   description: z.string().min(10, 'Description must be at least 10 characters.'),
   image: z.any().refine(file => file instanceof File, 'Image is required.'),
@@ -165,7 +165,7 @@ export function SellForm({ userId }: { userId: string }) {
                     </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                    {['New', 'Like New', 'Good', 'Fair'].map((condition) => (
+                    {['New', 'Like New', 'Good', 'Fair', 'Worn'].map((condition) => (
                         <SelectItem key={condition} value={condition}>
                         {condition}
                         </SelectItem>

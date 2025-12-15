@@ -19,7 +19,7 @@ export type Book = {
   title: string;
   author: string;
   price: number;
-  condition: 'New' | 'Like New' | 'Good' | 'Fair';
+  condition: 'New' | 'Like New' | 'Good' | 'Fair' | 'Worn';
   gradeLevel: GradeLevel;
   description: string;
   sellerId: string;
