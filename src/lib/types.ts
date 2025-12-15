@@ -12,7 +12,7 @@ export type User = {
   registrationDate: string;
 };
 
-export type GradeLevel = '8' | '9' | '10' | '11' | '12' | 'College';
+export type GradeLevel = '8' | '9' | '10' | '11' | '12';
 
 export type Book = {
   id: string;

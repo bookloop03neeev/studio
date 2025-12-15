@@ -33,7 +33,7 @@ import Image from 'next/image';
 import { useFirestore, addDocumentNonBlocking } from '@/firebase';
 import { collection, serverTimestamp } from 'firebase/firestore';
 
-const gradeLevels: GradeLevel[] = ['8', '9', '10', '11', '12', 'College'];
+const gradeLevels: GradeLevel[] = ['8', '9', '10', '11', '12'];
 
 const formSchema = z.object({
   title: z.string().min(2, 'Title must be at least 2 characters.'),
@@ -193,7 +193,7 @@ export function SellForm({ userId }: { userId: string }) {
                 <SelectContent>
                   {gradeLevels.map((level) => (
                     <SelectItem key={level} value={level}>
-                      {level === 'College' ? 'College' : `Grade ${level}`}
+                      {`Grade ${level}`}
                     </SelectItem>
                   ))}
                 </SelectContent>
