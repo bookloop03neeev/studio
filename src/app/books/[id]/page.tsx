@@ -12,7 +12,6 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { MessageCircle, Loader2 } from 'lucide-react';
-import Link from 'next/link';
 
 export default function BookDetailPage() {
     const params = useParams<{ id: string }>();

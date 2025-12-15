@@ -1,3 +1,4 @@
+
 'use client';
 
 import { notFound, useParams } from 'next/navigation';
@@ -13,7 +14,8 @@ import { Send } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 
-export default function ConversationPage({ params }: { params: { id: string } }) {
+export default function ConversationPage() {
+  const params = useParams<{ id: string }>();
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [otherUser, setOtherUser] = useState<User | null>(null);
   const [book, setBook] = useState<Book | null>(null);
