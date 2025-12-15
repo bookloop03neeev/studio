@@ -31,7 +31,7 @@ const formSchema = z.object({
   author: z.string().min(2, 'Author must be at least 2 characters.'),
   price: z.coerce.number().int().positive('Price must be a positive number.'),
   condition: z.enum(['New', 'Like New', 'Good', 'Fair']),
-  gradeLevel: z.enum(['K-5', '6-8', '9-12', 'College']),
+  gradeLevel: z.enum(['6-8', '9-12']),
   description: z.string().min(10, 'Description must be at least 10 characters.'),
   image: z.any().optional(),
 });
@@ -142,7 +142,7 @@ export function SellForm() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {['K-5', '6-8', '9-12', 'College'].map((level) => (
+                  {['6-8', '9-12'].map((level) => (
                     <SelectItem key={level} value={level}>
                       {level}
                     </SelectItem>
