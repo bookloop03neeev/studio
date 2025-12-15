@@ -176,7 +176,7 @@ export function SellForm({ userId }: { userId: string }) {
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select target grade level" />
-                  </Trigger>
+                  </SelectTrigger>
                 </FormControl>
                 <SelectContent>
                   {gradeLevels.map((level) => (
