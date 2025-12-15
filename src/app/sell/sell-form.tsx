@@ -34,6 +34,7 @@ import Image from 'next/image';
 import { useFirestore, addDocumentNonBlocking } from '@/firebase';
 import { collection, serverTimestamp } from 'firebase/firestore';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { cn } from '@/lib/utils';
 
 const gradeLevels: GradeLevel[] = ['8', '9', '10', '11', '12'];
 
@@ -321,15 +322,20 @@ export function SellForm({ userId }: { userId: string }) {
                 <RadioGroup
                   onValueChange={field.onChange}
                   defaultValue={field.value}
-                  className="flex flex-col space-y-1"
+                  className="flex flex-col space-y-2"
                 >
-                  <FormItem className="flex items-center space-x-3 space-y-0">
+                  <FormItem className="flex items-start space-x-3 space-y-0">
                     <FormControl>
                       <RadioGroupItem value="Pickup Point" />
                     </FormControl>
-                    <FormLabel className="font-normal">
-                      Meet at a designated pickup point (Fee: ₹5)
-                    </FormLabel>
+                    <div className="flex flex-col">
+                        <FormLabel className="font-normal">
+                            Meet at a designated pickup point (Fee: ₹5)
+                        </FormLabel>
+                        <p className={cn("text-sm text-muted-foreground")}>
+                            pickup point : school gate after school ended.
+                        </p>
+                    </div>
                   </FormItem>
                   <FormItem className="flex items-center space-x-3 space-y-0">
                     <FormControl>
@@ -353,5 +359,3 @@ export function SellForm({ userId }: { userId: string }) {
     </Form>
   );
 }
-
-    
