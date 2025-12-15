@@ -44,7 +44,7 @@ const formSchema = z.object({
   gradeLevel: z.enum(gradeLevels),
   description: z.string().min(10, 'Description must be at least 10 characters.'),
   image: z.any().refine(file => file instanceof File, 'Image is required.'),
-  listingCharge: z.enum(['0', '5', '10']).optional().default('0'),
+  listingCharge: z.enum(['5', '10'], { required_error: 'You must select a listing fee.' }),
   deliveryMethod: z.enum(['Pickup Point', 'Team Handling'], { required_error: 'You must select a delivery method.' }),
 });
 
@@ -61,7 +61,6 @@ export function SellForm({ userId }: { userId: string }) {
       author: '',
       price: 0,
       description: '',
-      listingCharge: '0',
     },
   });
 
@@ -94,7 +93,7 @@ export function SellForm({ userId }: { userId: string }) {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         ...values,
-        listingCharge: parseInt(values.listingCharge || '0', 10),
+        listingCharge: parseInt(values.listingCharge, 10),
     };
     
     // We don't need the image File object in Firestore
@@ -315,9 +314,9 @@ export function SellForm({ userId }: { userId: string }) {
           name="listingCharge"
           render={({ field }) => (
             <FormItem className="space-y-3">
-              <FormLabel>Optional Listing Fee</FormLabel>
+              <FormLabel>Listing Fee</FormLabel>
               <FormDescription>
-                Pay a small fee to have your book featured. This is optional.
+                Pay a small fee to have your book featured.
               </FormDescription>
               <FormControl>
                 <RadioGroup
@@ -325,12 +324,6 @@ export function SellForm({ userId }: { userId: string }) {
                   defaultValue={field.value}
                   className="flex items-center space-x-4"
                 >
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="0" />
-                    </FormControl>
-                    <FormLabel className="font-normal">None</FormLabel>
-                  </FormItem>
                   <FormItem className="flex items-center space-x-3 space-y-0">
                     <FormControl>
                       <RadioGroupItem value="5" />
