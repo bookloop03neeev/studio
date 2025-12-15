@@ -89,7 +89,7 @@ export function SellForm({ userId }: { userId: string }) {
     defaultValues: {
       title: '',
       author: '',
-      price: undefined,
+      price: '' as any,
       description: '',
     },
   });
